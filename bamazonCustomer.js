@@ -1,6 +1,8 @@
-var mysql = require("mysql");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 
-var connection = mysql.createConnection({
+
+let connection = mysql.createConnection({
   host: "localhost",
 
   // Your port; if not 3306
@@ -10,14 +12,23 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  //password: "",
+  password: "12069418Dp",
   database: "bamazon_DB"
 });
 
 connection.connect(function(err) {
     if (err) throw err;
+
     console.log("connected as id " + connection.threadId + "\n");
-    createProduct();
+    
+    connection.end(function(err) {
+      if (err) throw err;
+      
+      console.log("connection ended");
+    
+    });
+
+    //createProduct();
   });
 
   /*function createProduct() {
@@ -39,4 +50,7 @@ connection.connect(function(err) {
   
     // logs the actual query being run
     console.log(query.sql);
+
+    
   }*/
+
