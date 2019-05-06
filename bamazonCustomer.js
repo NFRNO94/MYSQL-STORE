@@ -16,27 +16,35 @@ let connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
 
+    start();
+    end();
+});
     //console.log("connected as id " + connection.threadId + "\n");
-    connection.query("SELECT*FROM products", function (err, result, fields) {
-      if (err) throw err;
-      //console.log(result);
-
+    
+    function start () {
+      connection.query("SELECT*FROM products", function (err, result, fields) {
+        if (err) throw err;
+        //console.log(result);
       for(var i = 0; i < result.length; i++) {
         console.log(
-        "-----------------------------------------------------------------------------------------------------------------------------------\n"
-        + "item ID: "  + result[i].item_id + " | " + "Product: " + result[i].product_name + " | " 
-        + "Department Name: " + result[i].department_name + " | " + "Price: $" 
-        + result[i].price + " | " + "Quantity Available: " + result[i].stock_quantity
-        + "\n-----------------------------------------------------------------------------------------------------------------------------------");
+        "----------------------------------------------------------------------------------------------------------\n"
+        + "ID: "  + result[i].item_id + " | " + "Item: " + result[i].product_name + " | " 
+        + "Dept: " + result[i].department_name + " | " + "Price: $" 
+        + result[i].price + " | " + "Quantity: " + result[i].stock_quantity
+        + "\n----------------------------------------------------------------------------------------------------------");
       }
-      connection.end(function(err) {
-        if (err) throw err;
-        
-        console.log("connection ended");
-      
-      });
-  });
-});
+    });
+  }
+
+  function end () {
+    connection.end(function(err) {
+      if (err) throw err;
+
+      console.log("connection ended");
+    });
+  };
+
+
 
 
 
