@@ -12,98 +12,80 @@ let connection = mysql.createConnection({
   database: "bamazon_DB"
 });
 
-connection.connect(function(err) {
-    if (err) throw err;
-    start();
+connection.connect(function (err) {
+  if (err) throw err;
+  start();
 });
-    
-    function start () {
-      connection.query("SELECT*FROM products", function (err, result, fields) {
-        if (err) throw err;
-        //console.log(result);
-      for(let i = 0; i < result.length; i++) {
-        console.log(
+
+function start() {
+  connection.query("SELECT*FROM products", function (err, result, fields) {
+    if (err) throw err;
+    //console.log(result);
+    for (let i = 0; i < result.length; i++) {
+      console.log(
         "----------------------------------------------------------------------------------------------------------\n"
-        + "ID: "  + result[i].item_id + " | " + "Item: " + result[i].product_name + " | " 
-        + "Dept: " + result[i].department_name + " | " + "Price: $" 
+        + "ID: " + result[i].item_id + " | " + "Item: " + result[i].product_name + " | "
+        + "Dept: " + result[i].department_name + " | " + "Price: $"
         + result[i].price + " | " + "Quantity: " + result[i].stock_quantity
         + "\n----------------------------------------------------------------------------------------------------------");
-      }
-    
-      inquirer
-      .prompt({
-      name: "buyItem",
-      type: "input",
-      message: "What is the ID of the product you wish to buy?",
-      choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    })
-    .then(function(answer) {
-      if (answer.buyItem > 0 && answer.buyItem < 13) {
-        unitQuantity();
-      } else{
-        console.log("Re-run the code, and enter a valid item ID.")
+    }
+    inquirer
+      .prompt([
+        {
+          name: "buyItem",
+          type: "rawlist",
+          choices: function () {
+            let choiceArray = [];
+            for (let i = 0; i < result.length; i++) {
+              choiceArray.push(result[i].product_name);
+            }
+            return choiceArray;
+          },
+          message: "What is the product you wish to buy?"
+        },
+        {
+          name: "quantity",
+          type: "input",
+          message: "Enter the quantity of the item to be purchased."
+        }
+      ])
+      .then(function (answer) {
+        let chosenItem;
+          if (answer.buyItem) {
+            chosenItem = answer.buyItem;
+            console.log("Chosen item: " + chosenItem);
+          }
+        if (parseInt(answer.quantity) < chosenItem.stock_quantity) {
+          connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+              {
+                stock_quantity: result[i].stock_quantity - answer.quantity
+              },
+              {
+                id: chosenItem.result[i].item_id
+              }
+            ],
+            function (error) {
+              if (error) throw err;
+              console.log("Product order has been placed!");
+            }
+          )
+        } else {
+          console.log("There is not enough quantity of this item in stock.")
+        }
+        //if (answer.buyItem) {
+        //unitQuantity();
+        //}*/
         end();
-      }
-    })
-  });
+      })
+  })
 }
 
-  function unitQuantity() {
-    inquirer
-    .prompt([
-      {
-        name: "quantity",
-        type: "input",
-        message: "Enter quantity of the item to be purchased."
-      },
-    ])
-    .then(function(answer) {
-  })
-  console.log("unit quantity function ran");
-  end();
+function end() {
+  connection.end(function (err) {
+    if (err) throw err;
+
+    console.log("connection ended");
+  });
 };
-
-
-      //customerPrompt();
-
-  //function customerPrompt () {
-    
- // }
-
-  function end () {
-    connection.end(function(err) {
-      if (err) throw err;
-
-      console.log("connection ended");
-    });
-  };
-
-
-
-
-
-
-  /*function createProduct() {
-    console.log("Inserting a new product...\n");
-    var query = connection.query(
-      "INSERT INTO products SET ?",
-      {
-        product_name: "",
-        department_name: ,
-        price: ,
-        stock_quantity: 
-      },
-      function(err, res) {
-        console.log(res.affectedRows + " product inserted!\n");
-        // Call updateProduct AFTER the INSERT completes
-        updateProduct();
-      }
-    );
-  
-    // logs the actual query being run
-    console.log(query.sql);
-
-    
-    
-  }*/
-
