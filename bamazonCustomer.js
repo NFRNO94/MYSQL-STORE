@@ -8,7 +8,7 @@ let connection = mysql.createConnection({
   // Your username
   user: "root",
   // Your password
-  password: "12069418Dp",
+  password: "",
   database: "bamazon_DB"
 });
 
